@@ -3,6 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Login</title>
+    <style>
+        /* Estilo para a tela de fundo escuro */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9998;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Estilo do iframe de login em tela cheia */
+        #loginIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fundo escuro, que vai cobrir a tela inteira -->
+    <div id="overlay">
+        <!-- Iframe de login -->
+        <iframe id="loginIframe" srcdoc="
+            <!DOCTYPE html>
+            <html lang='pt-BR'>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <title>Painel de Login</title>
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+
+                    body {
+                        background: #333;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        color: white;
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                    }
+
+                    .login-box {
+                        background: #444;
+                        padding: 20px;
+                        border-radius: 8px;
+                        width: 300px;
+                        text-align: center;
+                        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+                    }
+
+                    .login-box h2 {
+                        margin-bottom: 20px;
+                    }
+
+                    .login-box input {
+                        width: 100%;
+                        padding: 10px;
+                        margin: 10px 0;
+                        border-radius: 5px;
+                        border: none;
+                        font-size: 16px;
+                    }
+
+                    .login-box button {
+                        width: 100%;
+                        padding: 10px;
+                        border-radius: 5px;
+                        background-color: #ff0000;
+                        border: none;
+                        font-size: 16px;
+                        color: white;
+                        cursor: pointer;
+                    }
+
+                    .login-box button:hover {
+                        background-color: #cc0000;
+                    }
+
+                    /* Adicionando estilo extra para garantir que o formulário não saia da tela */
+                    input, button {
+                        box-sizing: border-box;
+                    }
+
+                </style>
+            </head>
+            <body>
+                <div class='login-box'>
+                    <h2>Login</h2>
+                    <form id='loginForm'>
+                        <input type='text' id='username' placeholder='Usuário' required><br>
+                        <input type='password' id='password' placeholder='Senha' required><br>
+                        <button type='submit'>Entrar</button>
+                    </form>
+                </div>
+
+                <script>
+                    // Hash da senha predefinida (exemplo)
+                    const correctHash = 'e9bc95d4412b1d92fd42f1c29a38b622abc7135f6187d4355a31fbd7bd2bad8ca6c07abdc718958bd2ca3f79be1b091b7de0296577a776c5facee6af97ed21cf'; // Substitua com sua hash SHA-512
+
+                    // Função para calcular a hash SHA-512 de uma senha
+                    async function hashPassword(password) {
+                        const encoder = new TextEncoder();
+                        const data = encoder.encode(password);
+                        const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+                        const hashArray = Array.from(new Uint8Array(hashBuffer));
+                        const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+                        return hashHex;
+                    }
+
+                    // Função para validar o login
+                    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+                        event.preventDefault(); // Impede o envio do formulário tradicional
+
+                        const username = document.getElementById('username').value;
+                        const password = document.getElementById('password').value;
+
+                        // Valida a senha com a hash predefinida
+                        const passwordHash = await hashPassword(password);
+
+                        if (passwordHash === correctHash) {
+                            // Se a senha for válida, desbloqueia a tela e remove o iframe de login
+                            parent.document.getElementById('overlay').style.display = 'none';  // Remove o fundo escuro
+                            parent.document.getElementById('loginIframe').style.display = 'none';  // Remove o iframe de login
+                        } else {
+                            alert('Senha incorreta!'); // Exibe um alerta em caso de erro
+                        }
+                    });
+                </script>
+            </body>
+            </html>
+        "></iframe>
+    </div>
+
+</body>
+</html>
+
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de RDPs</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -14,7 +167,7 @@
         }
 
         body {
-            background-image: url('https://i.pinimg.com/originals/23/6b/fd/236bfd8261c1e866d4555cd004c8e2f2.gif');
+            background-image: url('https://i.pinimg.com/736x/fe/c8/8c/fec88c0f945b003e5cb180416f0526f9.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -336,6 +489,8 @@
                 <a href="#" onclick="filterByCountry('Germany')">Alemanha</a>
                 <a href="#" onclick="filterByCountry('China')">China</a>
                 <a href="#" onclick="filterByCountry('Itália')">Itália</a>
+                <a href="#" onclick="filterByCountry('Inglaterra')">Inglaterra</a>
+
 
             </div>
         </div>
@@ -402,50 +557,21 @@
                 "downloadLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s",
             },
             {
-                "image": "https://filestore.community.support.microsoft.com/api/images/55fec858-c86f-4036-bb39-a0efafbd02fb?upload=true", 
-                "ip": "193.171.162.80", 
-                "host": "DESKTOP-TTVSA2", 
+                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSWtEoVZWn9jUa1AYBxogRT75x13fKV4qgiw&s", 
+                "ip": "203.0.113.2", 
+                "host": "Lenovo-B360", 
                 "country": "Itália", 
                 "countryFlag": "https://flagcdn.com/w320/it.png", 
-                "city": "Veneza", 
-                "timezone": "Europa/Veneza", 
+                "city": "veneza", 
+                "timezone": "Europa/Itália", 
                 "provider": "Comcast", 
-                "passwords": "104", 
-                "cookies": "1.200", 
-                "cards": "200", 
+                "passwords": "10", 
+                "cookies": "70", 
+                "cards": "00", 
                 "session": "00", 
                 "downloadLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s",
             },
-            {
-                "image": "https://filestore.community.support.microsoft.com/api/images/55fec858-c86f-4036-bb39-a0efafbd02fb?upload=true", 
-                "ip": "193.171.162.80", 
-                "host": "DESKTOP-TTVSA2", 
-                "country": "Itália", 
-                "countryFlag": "https://flagcdn.com/w320/it.png", 
-                "city": "Veneza", 
-                "timezone": "Europa/Veneza", 
-                "provider": "Comcast", 
-                "passwords": "104", 
-                "cookies": "1.200", 
-                "cards": "200", 
-                "session": "00", 
-                "downloadLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s",
-            },
-            {
-                "image": "https://filestore.community.support.microsoft.com/api/images/55fec858-c86f-4036-bb39-a0efafbd02fb?upload=true", 
-                "ip": "193.171.162.80", 
-                "host": "DESKTOP-TTVSA2", 
-                "country": "Itália", 
-                "countryFlag": "https://flagcdn.com/w320/it.png", 
-                "city": "Veneza", 
-                "timezone": "Europa/Veneza", 
-                "provider": "Comcast", 
-                "passwords": "104", 
-                "cookies": "1.200", 
-                "cards": "200", 
-                "session": "00", 
-                "downloadLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s",
-            },
+          
         ];
 
         const container = document.querySelector('.container');
@@ -575,16 +701,28 @@
         }
         
        function compileFile() {
-           const fileName = document.getElementById('fileName').value;
-           alert(`Arquivo ${fileName} compilado com sucesso!`);
+    const fileName = document.getElementById('fileName').value;  // Pega o nome do arquivo inserido
+    alert(`Arquivo ${fileName} compilado com sucesso!`);
 
-    // Aqui você pode definir o link para o qual deseja redirecionar o usuário
-    const redirectLink = "https://example.com"; // Substitua pelo seu link desejado
+    // Defina o link para o arquivo de download direto
+    const downloadLink = "https://www.python.org/ftp/python/3.13.1/python-3.13.1-amd64.exe"; // Substitua pelo link do seu arquivo
 
-    // Redireciona para o link
-    window.location.href = redirectLink;
+    // Cria um elemento de link temporário
+    const link = document.createElement('a');
+    link.href = downloadLink;  // URL do arquivo
+    link.download = fileName;  // O nome que o arquivo terá ao ser baixado
 
-    closeBuildModal();
+    // Verifica se o link foi criado corretamente
+    if (link.href) {
+        // Simula o clique no link para baixar o arquivo
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);  // Remove o link após o clique
+    } else {
+        alert("Erro ao tentar iniciar o download.");
+    }
+
+    closeBuildModal();  // Fecha o modal de compilação após a ação
 }
 
         // Initial render
@@ -592,20 +730,25 @@
     </script>
 </body>
 </html>
-<!-- Novo display para IP e porta pública -->
+
+
+<!-- ⚠️Novo display para IP e porta pública⚠️ -->
 <div class="public-ip" id="publicIpDisplay">Carregando IP...</div>
+
+<!-- Bloco de contagem de máquinas -->
+<div class="machine-count" id="machineCountDisplay">Carregando contagem...</div>
 
 <style>
     /* Estilo para o IP e porta pública */
     .public-ip {
         position: fixed;
-        top: 85px; /* Agora está mais abaixo da barra de navegação */
-        left: 15px;
+        top: 85px; /* Posição abaixo da barra de navegação */
+        left: 15px; /* Posição no lado esquerdo */
         background: rgba(255, 0, 0, 0.7); /* Vermelho com leve transparência */
-        padding: 6px 12px; /* Botão menor */
-        border-radius: 8px; /* Bordas um pouco mais suaves */
+        padding: 8px 16px; /* Ajuste no padding para igualar os tamanhos */
+        border-radius: 8px; /* Bordas mais suaves */
         color: white;
-        font-size: 12px; /* Tamanho de texto reduzido */
+        font-size: 14px; /* Tamanho de texto ajustado */
         font-weight: bold;
         letter-spacing: 1px;
         box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8); /* Sombra estilizada */
@@ -626,6 +769,37 @@
     .public-ip span {
         margin: 0 5px;
     }
+
+    /* Estilo para a contagem de blocos de máquinas */
+    .machine-count {
+        position: fixed;
+        top: 85px; /* Posição abaixo da barra de navegação */
+        right: 15px; /* Posição no lado direito (oposto ao IP) */
+        background: rgba(255, 0, 0, 0.7); /* Vermelho com leve transparência */
+        padding: 8px 16px; /* Ajuste no padding para igualar os tamanhos */
+        border-radius: 8px; /* Bordas mais suaves */
+        color: white;
+        font-size: 14px; /* Tamanho de texto ajustado */
+        font-weight: bold;
+        letter-spacing: 1px;
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8); /* Sombra estilizada */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        z-index: 9999;
+        backdrop-filter: blur(5px); /* Efeito de desfocagem no fundo */
+        border: 2px solid rgba(255, 0, 0, 0.5); /* Borda sutil */
+    }
+
+    .machine-count:hover {
+        background: rgba(255, 0, 0, 1); /* Fica mais intenso ao passar o mouse */
+        transform: scale(1.05); /* Efeito de aumento */
+    }
+
+    .machine-count span {
+        margin: 0 5px;
+    }
 </style>
 
 <script>
@@ -643,4 +817,14 @@
 
     // Chama a função para pegar o IP assim que a página carregar
     fetchPublicIP();
+
+    // Função para calcular e exibir a contagem de blocos de máquinas
+    function fetchMachineCount() {
+        const machineCount = machines.length; // Contagem dos blocos de máquinas
+
+        document.getElementById('machineCountDisplay').innerHTML = `🧟 ${machineCount} Máquinas Zumbis`;
+    }
+
+    // Chama a função para pegar a contagem de blocos assim que a página carregar
+    fetchMachineCount();
 </script>
