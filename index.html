@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de RDPs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: url('https://i.pinimg.com/originals/23/6b/fd/236bfd8261c1e866d4555cd004c8e2f2.gif');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 100px;
+            filter: brightness(1.0); /* Reduz o brilho da imagem */
+}
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Camada semitransparente para ajudar a reduzir o brilho */
+            z-index: -1;
+}
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(20, 0, 0, 0.8);
+            padding: 15px 30px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+        }
+
+        .navbar a {
+            color: #ff4d4d;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            background-color: #800000;
+            color: white;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-button {
+            background: none;
+            border: none;
+            color: #ff4d4d;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgba(20, 0, 0, 0.8);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            min-width: 160px;
+            z-index: 1000;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #800000;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .logo {
+            width: 200px;
+            margin-top: 100px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            width: 90%;
+            max-width: 500px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 50px 12px 15px;
+            font-size: 16px;
+            border-radius: 30px;
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            border-color: #ff4d4d;
+            background-color: rgba(0, 0, 0, 1);
+            outline: none;
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .container {
+            margin-top: 20px;
+            width: 90%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 300px);
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .machine-block {
+            background: rgba(50, 0, 0, 0.9);
+            border-radius: 12px;
+            padding: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .machine-block:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.8);
+        }
+
+        .machine-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 0, 0, 0.5);
+        }
+
+        .machine-info {
+            color: #ffcccc;
+            text-align: left;
+        }
+
+        .machine-info h3 {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .machine-info p {
+            font-size: 11px;
+            margin: 2px 0;
+            color: rgba(255, 204, 204, 0.8);
+        }
+
+        .machine-info img {
+            width: 18px;
+            height: auto;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .divider {
+            border-top: 1px solid rgba(255, 204, 204, 0.6);
+            margin: 5px 0;
+            padding: 5px 0;
+        }
+
+        .download-button {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .download-button:hover {
+            background-color: #cc3700;
+            transform: scale(1.05);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal iframe {
+            width: 80%;
+            height: 80%;
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .build-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .build-modal .modal-content {
+            background-color: rgba(50, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .build-modal .modal-content input {
+            width: 100%;
+            padding: 12px 18px;
+            margin: 10px 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 0, 0, 0.6);
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .build-modal .modal-content input:focus {
+            background-color: rgba(0, 0, 0, 1);
+            outline: none;
+        }
+
+        .build-modal .modal-content .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .build-modal .modal-content .buttons button {
+            padding: 12px 20px;
+            background-color: #ff4500;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 48%;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .build-modal .modal-content .buttons button:hover {
+            background-color: #cc3700;
+            transform: scale(1.05);
+        }
+
+        .build-modal .modal-logo {
+            width: 50px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#" onclick="filterByCountry('all')">Todos</a>
+        <div class="dropdown">
+            <button class="dropdown-button">Países</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="filterByCountry('Brazil')">Brasil</a>
+                <a href="#" onclick="filterByCountry('United States')">Estados Unidos</a>
+                <a href="#" onclick="filterByCountry('Germany')">Alemanha</a>
+                <a href="#" onclick="filterByCountry('China')">China</a>
+                <a href="#" onclick="filterByCountry('Itália')">Itália</a>
+
+            </div>
+        </div>
+        <a href="#" onclick="openBuildModal()">⚙️ Construir</a>
+    </div>
+
+    <img class="logo" src="https://i.ibb.co/0nLXK4C/image-removebg-preview-removebg-preview.png" alt="Logo da lista de RDPs">
+
+    <div class="search-bar">
+        <input type="text" placeholder="Pesquise por IP, host ou país..." id="search" oninput="searchMachines()">
+        <button onclick="searchMachines()"><i class="fas fa-search"></i></button>
+    </div>
+
+    <div class="container"></div>
+
+    <!-- Image Modal -->
+    <div class="modal" id="imageModal">
+        <span class="close" onclick="closeImageModal()">&times;</span>
+        <img id="modalImage" src="" alt="Imagem da tela">
+    </div>
+
+    <!-- Build Modal -->
+    <div class="build-modal" id="buildModal">
+        <div class="modal-content">
+            <img class="modal-logo" src="https://cdn-icons-png.flaticon.com/512/12027/12027971.png" alt="Logo da construção">
+            <input type="text" id="fileName" placeholder="Nome do arquivo...">
+            <div class="buttons">
+                <button onclick="compileFile()">Compilar</button>
+                <button onclick="closeBuildModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const machines = [
+            { 
+                "image": "https://s2-g1.glbimg.com/qCO0Isnb51K726HogPcdHMnTOok=/0x0:1600x900/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2020/G/T/0rPIt8TtCsbzXXpfHZFA/windows-desktop.jpg", 
+                "ip": "192.168.1.1", 
+                "host": "DESKTOP-RVFETCI", 
+                "country": "Brazil", 
+                "countryFlag": "https://flagcdn.com/w320/br.png", 
+                "city": "São Paulo", 
+                "timezone": "America/Sul", 
+                "provider": "P", 
+                "passwords": "570", 
+                "cookies": "557", 
+                "cards": "02", 
+                "session": "34", 
+                "downloadLink": "https://s2-g1.glbimg.com/qCO0Isnb51K726HogPcdHMnTOok=/0x0:1600x900/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2020/G/T/0rPIt8TtCsbzXXpfHZFA/windows-desktop.jpg",
+            },
+            {
+                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s", 
+                "ip": "203.0.113.2", 
+                "host": "DESKTOP-XLR8", 
+                "country": "United States", 
+                "countryFlag": "https://flagcdn.com/w320/us.png", 
+                "city": "New York", 
+                "timezone": "America/New_York", 
+                "provider": "Comcast", 
+                "passwords": "1042", 
+                "cookies": "3.700", 
+                "cards": "37", 
+                "session": "04", 
+                "downloadLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s",
+            },
+            {
+                "image": "https://filestore.community.support.microsoft.com/api/images/55fec858-c86f-4036-bb39-a0efafbd02fb?upload=true", 
+                "ip": "193.171.162.80", 
+                "host": "DESKTOP-TTVSA2", 
+                "country": "Itália", 
+                "countryFlag": "https://flagcdn.com/w320/it.png", 
+                "city": "Veneza", 
+                "timezone": "Europa/Veneza", 
+                "provider": "Comcast", 
+                "passwords": "104", 
+                "cookies": "1.200", 
+                "cards": "200", 
+                "session": "00", 
+                "downloadLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s",
+            },
+            {
+                "image": "https://filestore.community.support.microsoft.com/api/images/55fec858-c86f-4036-bb39-a0efafbd02fb?upload=true", 
+                "ip": "193.171.162.80", 
+                "host": "DESKTOP-TTVSA2", 
+                "country": "Itália", 
+                "countryFlag": "https://flagcdn.com/w320/it.png", 
+                "city": "Veneza", 
+                "timezone": "Europa/Veneza", 
+                "provider": "Comcast", 
+                "passwords": "104", 
+                "cookies": "1.200", 
+                "cards": "200", 
+                "session": "00", 
+                "downloadLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s",
+            },
+            {
+                "image": "https://filestore.community.support.microsoft.com/api/images/55fec858-c86f-4036-bb39-a0efafbd02fb?upload=true", 
+                "ip": "193.171.162.80", 
+                "host": "DESKTOP-TTVSA2", 
+                "country": "Itália", 
+                "countryFlag": "https://flagcdn.com/w320/it.png", 
+                "city": "Veneza", 
+                "timezone": "Europa/Veneza", 
+                "provider": "Comcast", 
+                "passwords": "104", 
+                "cookies": "1.200", 
+                "cards": "200", 
+                "session": "00", 
+                "downloadLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRomPAAqKAPu7nP8X2exhUJSrCV058k-laEZA&s",
+            },
+        ];
+
+        const container = document.querySelector('.container');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const buildModal = document.getElementById('buildModal');
+
+        function renderMachines(data) {
+            container.innerHTML = '';
+            data.forEach(machine => {
+                const block = document.createElement('div');
+                block.classList.add('machine-block');
+
+                const image = document.createElement('img');
+                image.classList.add('machine-image');
+                image.src = machine.image;
+                image.alt = `Imagem do ${machine.host}`;
+                image.onclick = () => openImageModal(machine.image);
+
+                const info = document.createElement('div');
+                info.classList.add('machine-info');
+
+                const name = document.createElement('h3');
+                name.innerHTML = machine.host;
+
+                const ip = document.createElement('p');
+                ip.innerHTML = `🛜: ${machine.ip}`;
+
+                const country = document.createElement('p');
+                country.innerHTML = `<img src="${machine.countryFlag}" alt="${machine.country}"> ${machine.country}`;
+
+                const city = document.createElement('p');
+                city.innerHTML = `🏙️ ${machine.city}`;
+
+                const timezone = document.createElement('p');
+                timezone.innerHTML = `🌏 ${machine.timezone}`;
+
+                const provider = document.createElement('p');
+                provider.innerHTML = `ℹ️ ${machine.provider}`;
+
+                const divider = document.createElement('div');
+                divider.classList.add('divider');
+
+                const passwords = document.createElement('p');
+                passwords.innerHTML = `🔑 Senhas: ${machine.passwords}`;
+
+                const cookies = document.createElement('p');
+                cookies.innerHTML = `🍪 Cookies: ${machine.cookies}`;
+
+                const cards = document.createElement('p');
+                cards.innerHTML = `💳 Cartões: ${machine.cards}`;
+
+                const session = document.createElement('p');
+                session.innerHTML = `🖥️ Sessões: ${machine.session}`;
+
+                const downloadButton = document.createElement('button');
+                downloadButton.classList.add('download-button');
+                downloadButton.innerHTML = '⬇️Download Dump';
+                downloadButton.onclick = () => downloadMachine(machine.downloadLink);
+
+                info.appendChild(name);
+                info.appendChild(ip);
+                info.appendChild(country);
+                info.appendChild(city);
+                info.appendChild(timezone);
+                info.appendChild(provider);
+                info.appendChild(divider);
+                info.appendChild(passwords);
+                info.appendChild(cookies);
+                info.appendChild(cards);
+                info.appendChild(session);
+                info.appendChild(downloadButton);
+
+                block.appendChild(image);
+                block.appendChild(info);
+                container.appendChild(block);
+            });
+        }
+
+        function openImageModal(imageSrc) {
+            modalImage.src = imageSrc;
+            imageModal.style.display = 'flex';
+        }
+
+        function closeImageModal() {
+            imageModal.style.display = 'none';
+        }
+
+        function searchMachines() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const filteredMachines = machines.filter(machine => {
+                return (
+                    machine.ip.includes(searchTerm) ||
+                    machine.host.toLowerCase().includes(searchTerm) ||
+                    machine.country.toLowerCase().includes(searchTerm)
+                );
+            });
+            renderMachines(filteredMachines);
+        }
+
+        function filterByCountry(country) {
+            if (country === 'all') {
+                renderMachines(machines);
+            } else {
+                const filteredMachines = machines.filter(machine => machine.country.toLowerCase() === country.toLowerCase());
+                renderMachines(filteredMachines);
+            }
+        }
+
+        function downloadMachine(link) {
+            window.location.href = link;
+        }
+
+        function openBuildModal() {
+            buildModal.style.display = 'flex';
+        }
+
+        function closeBuildModal() {
+            buildModal.style.display = 'none';
+        }
+
+        function compileFile() {
+            const fileName = document.getElementById('fileName').value;
+            alert(`Arquivo ${fileName} compilado com sucesso!`);
+            closeBuildModal();
+        
+        }
+        
+       function compileFile() {
+           const fileName = document.getElementById('fileName').value;
+           alert(`Arquivo ${fileName} compilado com sucesso!`);
+
+    // Aqui você pode definir o link para o qual deseja redirecionar o usuário
+    const redirectLink = "https://example.com"; // Substitua pelo seu link desejado
+
+    // Redireciona para o link
+    window.location.href = redirectLink;
+
+    closeBuildModal();
+}
+
+        // Initial render
+        renderMachines(machines);
+    </script>
+</body>
+</html>
+<!-- Novo display para IP e porta pública -->
+<div class="public-ip" id="publicIpDisplay">Carregando IP...</div>
+
+<style>
+    /* Estilo para o IP e porta pública */
+    .public-ip {
+        position: fixed;
+        top: 85px; /* Agora está mais abaixo da barra de navegação */
+        left: 15px;
+        background: rgba(255, 0, 0, 0.7); /* Vermelho com leve transparência */
+        padding: 6px 12px; /* Botão menor */
+        border-radius: 8px; /* Bordas um pouco mais suaves */
+        color: white;
+        font-size: 12px; /* Tamanho de texto reduzido */
+        font-weight: bold;
+        letter-spacing: 1px;
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8); /* Sombra estilizada */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        z-index: 9999;
+        backdrop-filter: blur(5px); /* Efeito de desfocagem no fundo */
+        border: 2px solid rgba(255, 0, 0, 0.5); /* Borda sutil */
+    }
+
+    .public-ip:hover {
+        background: rgba(255, 0, 0, 1); /* Fica mais intenso ao passar o mouse */
+        transform: scale(1.05); /* Efeito de aumento */
+    }
+
+    .public-ip span {
+        margin: 0 5px;
+    }
+</style>
+
+<script>
+    // Função para buscar o IP público
+    function fetchPublicIP() {
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('publicIpDisplay').innerHTML = `💻 ${data.ip} <span>🚪 8080</span>`;
+            })
+            .catch(error => {
+                console.error('Erro ao obter o IP público:', error);
+            });
+    }
+
+    // Chama a função para pegar o IP assim que a página carregar
+    fetchPublicIP();
+</script>
